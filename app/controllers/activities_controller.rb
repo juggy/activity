@@ -1,3 +1,5 @@
+require "net/http"
+require "uri"
 
 class ActivitiesController < ApplicationController
   layout 'application'
@@ -13,12 +15,19 @@ class ActivitiesController < ApplicationController
   def show
     redis = Activity.configuration.redis
     @user = params[:id].gsub(/\ /, ".")
+    @properties = redis.hgetall("#{@user}_properties")
+    @properties[:location] = location(@properties["ip"])
     @activities = redis.lrange("#{@user}_activities", 0, 19).map do |a|
       parse_json_and_symbolize(a)
     end
   end
 
   protected
+
+  def location(ip)
+    uri = URI.parse("http://api.hostip.info/get_html.php?ip=#{ip}")
+    Net::HTTP.get_response(uri).body
+  end
 
   def parse_json_and_symbolize(h)
     return {} if h.nil?

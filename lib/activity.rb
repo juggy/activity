@@ -47,6 +47,9 @@ module Activity
       redis.lpush "#{user}_activities", load
       redis.ltrim "#{user}_activities", 0, 19
 
+      # save user properties
+      redis.hset "#{user}_properties", "ip", request.remote_ip
+
       # remove the previous occurence from the global queue
       redis.lrem "activities", 1, user
       # push it back
