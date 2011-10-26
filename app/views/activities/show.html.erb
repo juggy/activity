@@ -1,9 +1,9 @@
+<h1><%= link_to "←", activities_path%> <%=@user%></h1>
 <div class="table-wrapper">
   <table class="list alternating"> 
     <thead>
       <tr>
         <th>When</th>
-        <th>User</th>
         <th>Referer → Current Path</th>
         <th>Custom</th>
       </tr>
@@ -11,9 +11,7 @@
     <tbody>
       <% @activities.each do |a|%>
         <tr>
-          <% a = a.first if a.is_a? Array%>
           <td><%=Time.zone.parse(a[:time]).to_s( :short ) if a[:time]%></td>
-          <td><%=link_to a[:user], activity_path(CGI.escape(a[:user]).gsub(/[\ .]+/, "%20")) if a[:user]%></td>
           <td><%=a[:referer]%> <strong>→ <%=a[:current_url]%></strong></td>
           <td>
             <%if a[:custom]%>

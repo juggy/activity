@@ -28,17 +28,30 @@ module Activity
 
   end
 
+  module Routes
+    def activity_routes(options={})
+      resources :activities, options
+    end
+  end
+
 
   module ApplicationController
     def activity(user, custom = {})
+      redis = Activity.configuration.redis
       load = {user: user,
               time: Time.now,
               current_url: request.fullpath, 
               referer: request.referer,
               custom: custom}.to_json
-      # save as a queue
-      Activity.configuration.redis.lpush "activities", load
-      Activity.configuration.redis.ltrim "activities", 0, 255
+      # save in a queue for the user
+      redis.lpush "#{user}_activities", load
+      redis.ltrim "#{user}_activities", 0, 19
+
+      # remove the previous occurence from the global queue
+      redis.lrem "activities", 1, user
+      # push it back
+      redis.lpush "activities", user
+      redis.ltrim "activities", 0, 99
 
       # optionaly push it to the client
       Pusher['activity'].trigger!('new', load) if Module::const_defined?("Pusher")
@@ -47,11 +60,8 @@ module Activity
   end
 
   class Engine < Rails::Engine
-    # engine_name "activity"
-    # paths["app/controllers"] = "app/controllers"
-    # paths["app/views"] = "app/views"
-
     ActionController::Base.send(:include, Activity::ApplicationController)
+    ActionDispatch::Routing::Mapper.send(:include, Activity::Routes)
   end
 
 end
