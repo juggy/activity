@@ -7,16 +7,15 @@ require "activity/version"
 Gem::Specification.new do |s|
   s.name        = "activity"
   s.version     = Activity::VERSION
-  s.authors     = ["TODO: Your name"]
-  s.email       = ["TODO: Your email"]
-  s.homepage    = "TODO"
-  s.summary     = "TODO: Summary of Activity."
-  s.description = "TODO: Description of Activity."
+  s.authors     = ["Julien Guimont"]
+  s.email       = ["julien.guimont@gmail.com  "]
+  s.homepage    = "http://jguimont.com"
+  s.summary     = "User activity feed"
+  s.description = "User activity feed"
 
   s.files = Dir["{app,config,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.rdoc"]
   s.test_files = Dir["test/**/*"]
 
   s.add_dependency "rails", "~> 3.1.1"
 
-  s.add_development_dependency "sqlite3"
 end
