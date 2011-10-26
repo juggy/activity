@@ -1,0 +1,30 @@
+<table> 
+  <thead>
+    <tr>
+      <th>When</th>
+      <th>User</th>
+      <th>Path</th>
+      <th>Referer</th>
+      <th>Custom</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @activities.each do |a|%>
+      <tr>
+        <td><%=Time.zone.parse(a[:time]).to_s( :short ) if a[:time]%></td>
+        <td><%=a[:user]%></td>
+        <td><%=a[:current_url]%></td>
+        <td><%=a[:referer]%></td>
+        <td>
+          <%if a[:custom]%>
+            <ul>
+            <%a[:custom].each do |key, val|%>
+              <li><strong><%=key%>:</strong> <%=val%></li>
+            <%end%>
+            </ul>
+          <%end%>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
