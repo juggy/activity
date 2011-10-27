@@ -4,14 +4,20 @@ require "redis-namespace"
 module Activity
 
   class Configuration
+    attr_accessor :user_class
     attr_accessor :redis    
 
     def redis
       Redis::Namespace.new(:activity, :redis => @redis)
     end
 
+    def user_class
+      Object.const_get(@user_class)
+    end
+
     def initilize
       redis = Redis.new
+      user_class = "User"
     end
   end
 

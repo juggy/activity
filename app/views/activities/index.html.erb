@@ -1,3 +1,13 @@
+<h1>Recent user activity</h1>
+<div class="clearfix" style="height:155px">
+  <div class="pull-left" style="padding:25px;">
+    <strong style="font-size:3em"><%=@activities.size%>/<%=Activity.configuration.user_class.count%></strong>
+    <div style="font-size:2em">users</div>
+  </div>
+  <div id="activity-chart" class="pull-left"></div>
+  <div id="day-chart" class="pull-left"></div>
+</div>
+
 <div class="table-wrapper">
   <table class="list alternating"> 
     <thead>
@@ -29,3 +39,47 @@
     </tbody>
   </table>
 </div>
+<% content_for :scripts do %>
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <script type="text/javascript">
+    google.load("visualization", "1", {packages:["corechart"]});
+    google.setOnLoadCallback(drawCharts);
+    function drawCharts() {
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'week');
+      data.addColumn('number', '# of users');
+      data.addRows(3);
+      data.setValue(0, 0, '1 week');
+      data.setValue(0, 1, <%=@activity_graph[0]%>);
+      data.setValue(1, 0, '2 weeks');
+      data.setValue(1, 1, <%=@activity_graph[1]%>);
+      data.setValue(2, 0, '3+ weeks');
+      data.setValue(2, 1, <%=@activity_graph[2]%>);
+
+      var chart = new google.visualization.PieChart(document.getElementById('activity-chart'));
+      chart.draw(data, {chartArea:{left:0,width:"100%",top:30,height:"90%"}, width: 200, height: 130, backgroundColor: "#efefff", title:"User activity", legend: "none"});
+
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'day');
+      data.addColumn('number', '# of users');
+      data.addRows(7);
+      data.setValue(0, 0, 'monday');
+      data.setValue(0, 1, <%=@day_graph[0]%>);
+      data.setValue(1, 0, 'tuesday');
+      data.setValue(1, 1, <%=@day_graph[1]%>);
+      data.setValue(2, 0, 'wednesday');
+      data.setValue(2, 1, <%=@day_graph[2]%>);
+      data.setValue(3, 0, 'thursday');
+      data.setValue(3, 1, <%=@day_graph[3]%>);
+      data.setValue(4, 0, 'friday');
+      data.setValue(4, 1, <%=@day_graph[4]%>);
+      data.setValue(5, 0, 'saturday');
+      data.setValue(5, 1, <%=@day_graph[5]%>);
+      data.setValue(6, 0, 'sunday');
+      data.setValue(6, 1, <%=@day_graph[6]%>);
+
+      var chart = new google.visualization.ColumnChart(document.getElementById('day-chart'));
+      chart.draw(data, {chartArea:{left:0,width:"100%",top:30,height:"90%"},width: 200, height: 130, backgroundColor: "#efefff", title:"Week days", legend: "none", hAxis:{textPosition:"none"}, vAxis:{textPosition:"none", minValue:0}});
+    }
+  </script>
+<%end%>
