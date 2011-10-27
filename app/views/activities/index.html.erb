@@ -1,11 +1,11 @@
 <h1>Recent user activity</h1>
 <div class="clearfix" style="height:155px">
-  <div class="pull-left" style="padding:25px;">
+  <div style="padding:25px;float:left">
     <strong style="font-size:3em"><%=@activities.size%>/<%=Activity.configuration.user_class.count%></strong>
     <div style="font-size:2em">users</div>
   </div>
-  <div id="activity-chart" class="pull-left"></div>
-  <div id="day-chart" class="pull-left"></div>
+  <div id="activity-chart" style="float:left"></div>
+  <div id="day-chart" style="float:left"></div>
 </div>
 
 <div class="table-wrapper">
