@@ -65,7 +65,7 @@ module Activity
       # optionaly push it to the client
       if Module::const_defined?("Pusher")
         Pusher['activities'].trigger_async('new', load) 
-        Pusher["#{user}_activities"].trigger_async('new', load) 
+        # Pusher["#{user}_activities"].trigger_async('new', load) 
       end  
       
     end
