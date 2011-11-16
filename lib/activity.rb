@@ -43,31 +43,34 @@ module Activity
 
   module ApplicationController
     def activity(user, custom = {})
-      redis = Activity.configuration.redis
-      load = {user: user,
-              time: Time.now,
-              current_url: request.fullpath, 
-              referer: request.referer,
-              custom: custom}.to_json
-      # save in a queue for the user
-      redis.lpush "#{user}_activities", load
-      redis.ltrim "#{user}_activities", 0, 19
+      begin
+        redis = Activity.configuration.redis
+        load = {user: user,
+                time: Time.now,
+                current_url: request.fullpath, 
+                referer: request.referer,
+                custom: custom}.to_json
+        # save in a queue for the user
+        redis.lpush "#{user}_activities", load
+        redis.ltrim "#{user}_activities", 0, 19
 
-      # save user properties
-      redis.hset "#{user}_properties", "ip", request.remote_ip
+        # save user properties
+        redis.hset "#{user}_properties", "ip", request.remote_ip
 
-      # remove the previous occurence from the global queue
-      redis.lrem "activities", 1, user
-      # push it back
-      redis.lpush "activities", user
-      redis.ltrim "activities", 0, 99
+        # remove the previous occurence from the global queue
+        redis.lrem "activities", 1, user
+        # push it back
+        redis.lpush "activities", user
+        redis.ltrim "activities", 0, 99
 
-      # optionaly push it to the client
-      if Module::const_defined?("Pusher")
-        Pusher['activities'].trigger_async('new', load) 
-        # Pusher["#{user}_activities"].trigger_async('new', load) 
-      end  
-      
+        # optionaly push it to the client
+        if Module::const_defined?("Pusher")
+          Pusher['activities'].trigger_async('new', load) 
+          # Pusher["#{user}_activities"].trigger_async('new', load) 
+        end  
+      rescue => e
+        #silently fail
+      end
     end
   end
 
